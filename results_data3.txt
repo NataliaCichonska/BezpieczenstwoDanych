@@ -1,0 +1,9 @@
+Plik danych, Œredni czas referencyjny, Œredni czas testowanego, Stosunek
+normal_1.txt, 11.406507, 0.056400, 0.004945
+normal_2.txt, 11.406507, 0.308489, 0.027045
+normal_3.txt, 11.406507, 5.523203, 0.484215
+normal_4.txt, 11.406507, 12.696665, 1.113107
+uniform_1.txt, 11.406507, 0.052823, 0.004631
+uniform_2.txt, 11.406507, 0.310338, 0.027207
+uniform_3.txt, 11.406507, 5.608061, 0.491655
+uniform_4.txt, 11.406507, 12.715286, 1.114740
