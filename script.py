@@ -7,7 +7,7 @@ REFERENCE_CODE = "benchmark.cpp"
 TESTED_CODE = "main.cpp"
 REFERENCE_EXEC = "benchmark_exec"
 TESTED_EXEC = "main_exec"
-DATA_DIR = "data"  # Folder z danymi wejściowymi
+DATA_DIR = "data2"  # Folder z danymi wejściowymi
 OUTPUT_FILE = "results.txt"
 REPEATS = 5  # Liczba powtórzeń wykonania każdego programu
 

@@ -55,10 +55,10 @@ int main() {
     int ascii_end = 126;  // Koniec zakresu ASCII (drukowalne znaki)
 
     // Liczba stringów w każdym zbiorze
-    size_t list_size1 = 1000;
-    size_t list_size2 = 5000;
-    size_t list_size3 = 10000;
-    size_t list_size4 = 50000;
+    size_t list_size1 = 100000;
+    size_t list_size2 = 500000;
+    size_t list_size3 = 1000000;
+    size_t list_size4 = 5000000;
 
     // Średnia i odchylenie standardowe dla rozkładu normalnego
     double mean = (ascii_start + ascii_end) / 2.0; // Środek zakresu
