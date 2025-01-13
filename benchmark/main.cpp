@@ -51,17 +51,15 @@ int main() {
     }
 
     // Start pomiaru czasu
-    clock_t start = clock();
+    // clock_t start = clock();
     matrixMultiply(n, mat1, mat2, result);
 
     unsigned long fibResult = fibonacci(45);
 
     // Koniec pomiaru czasu
-    clock_t end = clock();
-    double timeSpent = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+    // clock_t end = clock();
+    // double timeSpent = static_cast<double>(end - start) / CLOCKS_PER_SEC;
 
-    printf("Fibonacci dla 45 = %lu\n", fibResult);
-    printf("Czas: %.5fs\n", timeSpent);
 
     free(mat1);
     free(mat2);
