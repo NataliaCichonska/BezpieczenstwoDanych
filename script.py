@@ -9,6 +9,7 @@ REFERENCE_EXEC = "benchmark_exec"
 TESTED_EXEC = "main_exec"
 DATA_DIR = "data"  # Folder z danymi wejściowymi
 OUTPUT_FILE = "results.txt"
+REPEATS = 5  # Liczba powtórzeń wykonania każdego programu
 
 
 def compile_cpp(source_file, output_file):
@@ -21,7 +22,7 @@ def compile_cpp(source_file, output_file):
         exit(1)
 
 
-def run_program(exec_file, input_file=None):
+def run_program(exec_file, input_file=None, repeats=1):
     """
     Uruchamia program i zwraca czas wykonania.
     Jeśli input_file jest None, uruchamia program bez argumentów.
@@ -30,14 +31,19 @@ def run_program(exec_file, input_file=None):
     if input_file:
         cmd.append(input_file)
 
-    start_time = time.perf_counter()
-    try:
-        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
-    except subprocess.CalledProcessError as e:
-        print(f"Błąd wykonania {exec_file} dla pliku {input_file}: {e}")
-        exit(1)
-    end_time = time.perf_counter()
-    return end_time - start_time
+    times = []
+    for _ in range(repeats):
+        start_time = time.perf_counter()
+        try:
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+        except subprocess.CalledProcessError as e:
+            print(f"Błąd wykonania {exec_file} dla pliku {input_file}: {e}")
+            exit(1)
+        end_time = time.perf_counter()
+        times.append(end_time - start_time)
+
+    avg_time = sum(times) / len(times)
+    return avg_time
 
 
 def main():
@@ -54,8 +60,8 @@ def main():
     results = []
 
     # Uruchamianie kodu referencyjnego bez plików wejściowych (jeden raz)
-    print("Uruchamianie kodu referencyjnego...")
-    reference_time = run_program(REFERENCE_EXEC)
+    print(f"Uruchamianie kodu referencyjnego {REPEATS} razy...")
+    reference_time = run_program(REFERENCE_EXEC, repeats=REPEATS)
 
     # Sprawdzanie błędu dla czasu referencyjnego
     if reference_time == 0:
@@ -67,13 +73,13 @@ def main():
         input_path = os.path.join(DATA_DIR, data_file)
         print(f"Przetwarzanie pliku danych: {data_file}")
 
-        tested_time = run_program(TESTED_EXEC, input_path)
+        tested_time = run_program(TESTED_EXEC, input_file=input_path, repeats=REPEATS)
         ratio = tested_time / reference_time
         results.append((data_file, reference_time, tested_time, ratio))
 
     # Zapis wyników do pliku
     with open(OUTPUT_FILE, "w") as f:
-        f.write("Plik danych, Czas referencyjny, Czas testowanego, Stosunek\n")
+        f.write("Plik danych, Średni czas referencyjny, Średni czas testowanego, Stosunek\n")
         for data_file, ref_time, test_time, ratio in results:
             f.write(f"{data_file}, {ref_time:.6f}, {test_time:.6f}, {ratio:.6f}\n")
 
