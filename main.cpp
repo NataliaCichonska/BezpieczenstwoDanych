@@ -1,81 +1,110 @@
 #include <iostream>
 #include <fstream>
-#include <random>
-#include <vector>
 #include <string>
+#include <iomanip>
+#include <vector>
+#include <climits>
+#include <chrono>
 
-void generate_uniform_ascii(std::string filename, size_t L, size_t n, int start, int end) {
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return;
+// DJB2 hash function
+unsigned long djb2(const std::string& str) {
+    unsigned long hash = 5381;
+    for (char c : str) {
+        hash = ((hash << 5) + hash) + c;
     }
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(start, end);
-
-    for (size_t i = 0; i < n; ++i) {
-        for (size_t j = 0; j < L; ++j) {
-            file << static_cast<char>(distrib(gen));
-        }
-        file << '\n';
-    }
-
-    file.close();
+    return hash;
 }
 
-void generate_normal_ascii(std::string filename, size_t L, size_t n, double mean, double stddev, int start, int end) {
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return;
+// TreeNode structure
+struct TreeNode {
+    unsigned long hash;
+    std::vector<std::string> data;
+    TreeNode* left;
+    TreeNode* right;
+
+    TreeNode(unsigned long h, const std::string& d)
+        : hash(h), data({d}), left(nullptr), right(nullptr) {}
+};
+
+// Insert function 
+TreeNode* insert(TreeNode* root, unsigned long hash, const std::string& data) {
+    if (!root) {
+        return new TreeNode(hash, data);
     }
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::normal_distribution<> distrib(mean, stddev);
-
-    for (size_t i = 0; i < n; ++i) {
-        for (size_t j = 0; j < L; ++j) {
-            int value = static_cast<int>(distrib(gen));
-            if (value < start) value = start;
-            if (value > end) value = end;
-            file << static_cast<char>(value);
-        }
-        file << '\n';
+    
+    if (hash < root->hash) {
+        root->left = insert(root->left, hash, data);
     }
-
-    file.close();
+    else if (hash > root->hash) {
+        root->right = insert(root->right, hash, data);
+    }
+    else {
+        root->data.push_back(data);
+    }
+    return root;
 }
 
-int main() {
-    size_t L = 5; // Długość każdego stringa
-    int ascii_start = 32; // Początek zakresu ASCII (drukowalne znaki)
-    int ascii_end = 126;  // Koniec zakresu ASCII (drukowalne znaki)
+// Add cleanup function at the top
+void cleanupTree(TreeNode* root) {
+    if (root) {
+        cleanupTree(root->left);
+        cleanupTree(root->right);
+        delete root;
+    }
+}
 
-    // Liczba stringów w każdym zbiorze
-    size_t list_size1 = 1000;
-    size_t list_size2 = 5000;
-    size_t list_size3 = 10000;
-    size_t list_size4 = 50000;
+int main(int argc, char* argv[]) {
+    TreeNode* root = nullptr;
+    
+    try {
+        if (argc < 2 || argc > 3) {
+            std::cout << "Usage: " << argv[0] << " <input_file> [save_to_file]" << std::endl;
+            return 1;
+        }
 
-    // Średnia i odchylenie standardowe dla rozkładu normalnego
-    double mean = (ascii_start + ascii_end) / 2.0; // Środek zakresu
-    double stddev = 10.0;                          // Odchylenie standardowe
+        std::string inputFileName = argv[1];
+        bool shouldSave = true;  // default value
+        
+        if (argc == 3) {
+            shouldSave = (std::string(argv[2]) == "true");
+        }
 
-    // Generowanie zbiorów z rozkładem równomiernym
-    generate_uniform_ascii("uniform_1.txt", L, list_size1, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_2.txt", L, list_size2, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_3.txt", L, list_size3, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_4.txt", L, list_size4, ascii_start, ascii_end);
+        std::ifstream inFile(inputFileName);
+        if (!inFile) {
+            std::cout << "Error opening input file!" << std::endl;
+            return 1;
+        }
 
-    // Generowanie zbiorów z rozkładem normalnym
-    generate_normal_ascii("normal_1.txt", L, list_size1, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_2.txt", L, list_size2, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_3.txt", L, list_size3, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_4.txt", L, list_size4, mean, stddev, ascii_start, ascii_end);
+        std::ofstream outFile;
+        if (shouldSave) {
+            size_t dotPos = inputFileName.find_last_of('.');
+            std::string baseName = (dotPos != std::string::npos) ? 
+                inputFileName.substr(0, dotPos) : inputFileName;
+            std::string outFileName = baseName + "_hashed.txt";
+            outFile.open(outFileName);
+            
+            if (!outFile) {
+                std::cout << "Error creating output file!" << std::endl;
+                cleanupTree(root);
+                return 1;
+            }
+        }
 
-    std::cout << "ASCII datasets generated and saved to files." << std::endl;
+        std::string word;
+        while (std::getline(inFile, word)) {
+            if (!word.empty()) {
+                unsigned long hash = djb2(word);
+                root = insert(root, hash, word);
+                if (shouldSave) {
+                    outFile << hash << std::endl;
+                }
+            }
+        }
+    } catch (...) {
+        cleanupTree(root);
+        throw;
+    }
+
+    cleanupTree(root);
     return 0;
 }
