@@ -30,6 +30,7 @@ def run_program(exec_file, input_file=None, repeats=1):
     cmd = [f"./{exec_file}"]
     if input_file:
         cmd.append(input_file)
+        cmd.append("false")
 
     times = []
     for _ in range(repeats):
