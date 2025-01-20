@@ -65,16 +65,16 @@ int main() {
     double stddev = 10.0;                          // Odchylenie standardowe
 
     // Generowanie zbiorów z rozkładem równomiernym
-    generate_uniform_ascii("uniform_1.txt", L, list_size1, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_2.txt", L, list_size2, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_3.txt", L, list_size3, ascii_start, ascii_end);
-    generate_uniform_ascii("uniform_4.txt", L, list_size4, ascii_start, ascii_end);
+generate_uniform_ascii("uniform_" + std::to_string(list_size1) + ".txt", L, list_size1, ascii_start, ascii_end);
+    generate_uniform_ascii("uniform_" + std::to_string(list_size2) + ".txt", L, list_size2, ascii_start, ascii_end);
+    generate_uniform_ascii("uniform_" + std::to_string(list_size3) + ".txt", L, list_size3, ascii_start, ascii_end);
+    generate_uniform_ascii("uniform_" + std::to_string(list_size4) + ".txt", L, list_size4, ascii_start, ascii_end);
 
     // Generowanie zbiorów z rozkładem normalnym
-    generate_normal_ascii("normal_1.txt", L, list_size1, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_2.txt", L, list_size2, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_3.txt", L, list_size3, mean, stddev, ascii_start, ascii_end);
-    generate_normal_ascii("normal_4.txt", L, list_size4, mean, stddev, ascii_start, ascii_end);
+    generate_normal_ascii("normal_" + std::to_string(list_size1) + ".txt", L, list_size1, mean, stddev, ascii_start, ascii_end);
+    generate_normal_ascii("normal_" + std::to_string(list_size2) + ".txt", L, list_size2, mean, stddev, ascii_start, ascii_end);
+    generate_normal_ascii("normal_" + std::to_string(list_size3) + ".txt", L, list_size3, mean, stddev, ascii_start, ascii_end);
+    generate_normal_ascii("normal_" + std::to_string(list_size4) + ".txt", L, list_size4, mean, stddev, ascii_start, ascii_end);
 
     std::cout << "ASCII datasets generated and saved to files." << std::endl;
     return 0;
