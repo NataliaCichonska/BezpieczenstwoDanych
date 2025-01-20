@@ -2,14 +2,15 @@ import os
 import subprocess
 import time
 import matplotlib.pyplot as plt
+import psutil  # Import psutil for resource usage checking
 
 # Ścieżki do plików kodu C++
 REFERENCE_CODE = "benchmark.cpp"
 TESTED_CODE = "main.cpp"
 REFERENCE_EXEC = "benchmark_exec"
 TESTED_EXEC = "main_exec"
-DATA_DIR = "data_small"  # Folder z danymi wejściowymi
-OUTPUT_FILE = "results.txt"
+DATA_DIR = "data3"  # Folder z danymi wejściowymi
+OUTPUT_FILE = "results_data3.txt"
 REPEATS = 5  # Liczba powtórzeń wykonania każdego programu
 
 
@@ -21,6 +22,12 @@ def compile_cpp(source_file, output_file):
     except subprocess.CalledProcessError as e:
         print(f"Błąd kompilacji {source_file}: {e}")
         exit(1)
+
+def check_resource_usage():
+    """Sprawdza zajętość zasobów systemowych."""
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory_info = psutil.virtual_memory()
+    return cpu_usage, memory_info.percent
 
 
 def run_program(exec_file, input_file=None, repeats=1,reference=False):
@@ -45,6 +52,10 @@ def run_program(exec_file, input_file=None, repeats=1,reference=False):
         if reference:
             print(f"Czas {i}-tego wykonania programu referencyjnego: {end_time - start_time}")
         times.append(end_time - start_time)
+
+        # Check resource usage during execution
+        cpu_usage, memory_usage = check_resource_usage()
+        print(f"Test execution: CPU Usage: {cpu_usage}%, Memory Usage: {memory_usage}%")
 
     avg_time = sum(times) / len(times)
     return avg_time
@@ -101,6 +112,11 @@ def plot_results(results):
     print("Wykres porównania czasów wykonania zapisano jako 'time_comparison.png'.")
 
 def main():
+    # Check resource usage in idle state
+    print("Sprawdzanie zajętości zasobów w stanie bezczynności...")
+    idle_cpu_usage, idle_memory_usage = check_resource_usage()
+    print(f"Idle CPU Usage: {idle_cpu_usage}%, Idle Memory Usage: {idle_memory_usage}%")
+
     # Kompilacja plików C++
     compile_cpp(REFERENCE_CODE, REFERENCE_EXEC)
     compile_cpp(TESTED_CODE, TESTED_EXEC)

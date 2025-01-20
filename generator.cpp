@@ -57,8 +57,8 @@ int main() {
     // Liczba stringów w każdym zbiorze
     size_t list_size1 = 100000;
     size_t list_size2 = 500000;
-    size_t list_size3 = 1000000;
-    size_t list_size4 = 5000000;
+    size_t list_size3 = 5000000;
+    size_t list_size4 = 10000000;
 
     // Średnia i odchylenie standardowe dla rozkładu normalnego
     double mean = (ascii_start + ascii_end) / 2.0; // Środek zakresu
