@@ -55,8 +55,8 @@ int main() {
     int ascii_end = 126;  // Koniec zakresu ASCII (drukowalne znaki)
 
     // Liczba stringów w każdym zbiorze
-    size_t list_size1 = 100000;
-    size_t list_size2 = 500000;
+    size_t list_size1 = 500000;
+    size_t list_size2 = 1000000;
     size_t list_size3 = 5000000;
     size_t list_size4 = 10000000;
 
